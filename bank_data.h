@@ -33,7 +33,7 @@ int database_initialize(void);
 void database_close(void);
 
 /* Functions that ask server to operate.*/
-int ask_new_account(const person_infor user);
+int ask_new_account(const person_infor user, account_data *data);
 int ask_reset_passwd(const person_infor user, const account_data data);
 int ask_report_loss(const person_infor user, const account_data data);
 int ask_login(const account_data data);

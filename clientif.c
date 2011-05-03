@@ -27,7 +27,7 @@ void database_close(void)
     client_ending();
 }
 
-int ask_create_account(const person_infor user)
+int ask_new_account(const person_infor user, account_data *data)
 {
     int res;
     message_t mess_send;
@@ -44,7 +44,7 @@ int ask_create_account(const person_infor user)
         if (read_one_response(&mess_ret)) {
             if (mess_ret.response == r_success) {
                 res = 1;
-                printf("Your card number:%d\nPassword:%s\n", mess_ret.data.account_id,
+                printf("Your card number:%s\nPassword:%s\n", mess_ret.data.account_id,
                         mess_ret.data.passwd);
                 printf("Please change your password as soon as posible!\n");
             } else {
@@ -127,7 +127,7 @@ int ask_report_loss(const person_infor user, const account_data data)
                 fprintf(stderr, "%s\n", mess_ret.error_text);
             }
         } else {
-            frpintf(stderr, "Server failed to response!\n");
+            fprintf(stderr, "Server failed to response!\n");
         }
     } else {
         fprintf(stderr, "Server not accepting requests!\n");
@@ -148,7 +148,7 @@ int ask_login(const account_data data)
     
     if (send_mess_to_server(mess_send)) {
         if (read_one_response(&mess_ret)) {
-            if (mess_ret.response = r_success) {
+            if (mess_ret.response == r_success) {
                 res = 1;
             } else {
                 fprintf(stderr, "%s\n", mess_ret.error_text);
@@ -178,7 +178,7 @@ int ask_query(const account_data data)
             if (mess_ret.response == r_success) {
                 money = mess_ret.data.money;
             } else {
-                fprinf(stderr, "%s\n", mess_ret.error_text);
+                fprintf(stderr, "%s\n", mess_ret.error_text);
             }
         } else {
             fprintf(stderr, "Server failed to response!\n");

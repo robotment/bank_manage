@@ -56,9 +56,9 @@ void end_resp_to_client(void);
 
 int client_starting(void);
 void client_ending(void);
-int send_message_to_server(message_t mess_to_send);
+int send_mess_to_server(message_t mess_to_send);
 int start_resp_from_server(void);
-int send_resp_from_server(message_t *rec_ptr);
+int read_resp_from_server(message_t *rec_ptr);
 void end_resp_from_server(void);
 
 #endif /*  cliser.h  end */

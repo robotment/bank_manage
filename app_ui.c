@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     memset(account_id, '\0', sizeof(account_id));
     current_option = mo_login; /* make sure current_option not equal mo_exit. */
     announce();
-    //database_initialize();
+    database_initialize();
 
     /* Now we wait for user to input command. */
     while (current_option != mo_exit) {
@@ -97,19 +97,19 @@ int main(int argc, char *argv[])
             case mo_invalid:
             default:
                 break;
-        } // switch
-    } // while
+        } /* switch */
+    } /* while */
 
-    //database_close();
+    database_close();
     exit(EXIT_SUCCESS);
-} // main
+} 
 
 static void announce(void)
 {
     printf("\n\n\t\tWelcome to the demonstration bank management system \
             program\n");
     return;
-} // announce
+}
 
 static menu_options_e show_menu(const char *account_id)
 {
@@ -213,6 +213,7 @@ static int check_phone(char *phone)
     return 0;
 }
 
+/*
 static int check_address(char *address)
 {
     return 0;
@@ -222,6 +223,8 @@ static int check_account(char *account)
 {
     return 0;
 }
+
+*/
 
 /* create a new account.
  * You must input your information(id num, name, phone number, sex, address
@@ -241,7 +244,6 @@ static void create_new_account(void)
      */
     while (invalid) {
         printf("Name: ");
-        //clear_input(); /* clear stdin */
         fgets(person.name, NAME_LEN, stdin);
         strip_return(person.name);
         invalid = check_name(person.name);
@@ -287,7 +289,7 @@ static void create_new_account(void)
     printf("Phone: %s\n", person.phone);
     printf("Address: %s\n", person.address);
     if (get_confirm("Create this account ?")) 
-        //ask_new_account(person);
+        ask_new_account(person, NULL);
     return;
 }
 
@@ -346,7 +348,7 @@ static void report_loss(void)
     printf("Name: %s\n", person.name);
     printf("ID: %s\n", person.id);
     if (get_confirm("Report lossing?"))
-        //ask_report_loss(person, account);
+        ask_report_loss(person, account);
 
     return;
 }
@@ -362,6 +364,12 @@ static void login(char *account_id)
     fgets(account.account_id, ACCOUNT_LEN+2, stdin);
     strip_return(account.account_id);
 
+    if (strcmp(account.account_id, "\0") == 0 ||
+            strlen(account.account_id) < ACCOUNT_LEN) {
+        fprintf(stderr, "Invalid account\n");
+        return;
+    }
+
     /* Visually password input.
      * No time to correct it, just let it goes.
      */
@@ -369,11 +377,11 @@ static void login(char *account_id)
     fgets(account.passwd, STRING_LEN, stdin); 
     strip_return(account.passwd);
     
-    /*
     if (ask_login(account)) {
         strncpy(account_id, account.account_id, ACCOUNT_LEN+1);
+    } else {
+        fprintf(stderr, "Wrong password or accountNum\n");
     }
-    */
 
     return;
 }
@@ -384,7 +392,10 @@ static void login(char *account_id)
 static void query(const char *account_id)
 {
     int money = 0;
-    if ((money = ask_query(account_id)) >= 0) {
+    account_data data;
+
+    strcpy(data.account_id, account_id);
+    if ((money = ask_query(data)) >= 0) {
         printf("\n\tMoney left: %d", money);
     }
         
@@ -400,10 +411,13 @@ static void draw_money(const char *account_id)
     
     strcpy(account.account_id, account_id);
     printf("Take money: ");
-    fscanf(stdin, "%d", account.money);
+    fscanf(stdin, "%d", &account.money);
+    clear_input();
 
     if (ask_draw_money(account)) {
         printf("Success!\n");
+    } else {
+        printf("Not enough money\n");
     }
 
     return;
@@ -441,8 +455,9 @@ static void renewal(const char *account_id)
     fgets(account.renew_account, ACCOUNT_LEN+2, stdin);
     strip_return(account.renew_account);
 
-    fprintf("Transfer money: ");
+    printf("Transfer money: ");
     fscanf(stdin, "%d", &account.money);
+    clear_input();
 
     printf("\nTransfer account: %s\n", account.renew_account);
     printf("Transfer money: %d\n", account.money);
@@ -494,7 +509,7 @@ static void change_passwd(const char *account_id)
  */
 static void logout(char *account_id)
 {
-    if (ask_logou(account_id))
+    if (ask_logout(account_id))
         account_id[0] = '\0';
 
     return;

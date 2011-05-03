@@ -5,7 +5,7 @@
 /* Define some values that will be used by followed functions.*/
 
 static int server_fd = -1;
-static int pid_t mypid = 0;
+static pid_t mypid = 0;
 static char client_pipe_name[PATH_MAX + 1] = {'\0'};
 static int client_fd = -1;
 static int client_write_fd = -1;
@@ -53,12 +53,12 @@ int read_request_from_client(message_t *rec_ptr)
         if (read_bytes == 0) {
             close(server_fd);
             if ((server_fd = open(SERVER_PIPE, O_RDONLY) == -1)) {
-                fprinf(stderr, "Sever startup error, no FIFO opened!\n");
+                fprintf(stderr, "Sever startup error, no FIFO opened!\n");
                 return 0;
             }
             read_bytes = read(server_fd, rec_ptr, sizeof(*rec_ptr));
         }
-        if (read_bytes = sizeof(*rec_ptr))
+        if (read_bytes == sizeof(*rec_ptr))
             res = 1;
     }
 
@@ -73,7 +73,7 @@ int start_resp_to_client(const message_t mess_to_send)
     return 1;
 }
 
-int send_resp_to_clien(const message_t mess_to_send)
+int send_resp_to_client(const message_t mess_to_send)
 {
     int write_bytes;
     
